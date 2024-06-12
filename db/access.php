@@ -17,18 +17,20 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     local_dbapis
- * @category    string
- * @copyright   2023 Your Name <you@example.com>
+ * @package     local_greetings
+ * @copyright   2024 Arief Adjie Wicaksono <it.arief@iou.edu.gm>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Database API examples';
-$string['yourmessage'] = 'Your message';
-$string['addpost'] = 'Add message';
-$string['searchposts'] = 'Search messages';
-$string['searchterm'] = 'Search term';
-$string['postdeleted'] = 'Message deleted';
-$string['dbapis:deleteanymessage'] = 'Delete any message on the dbapis';
+$capabilities = [
+    'local/dbapis:deleteanymessage' => [
+        'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+];

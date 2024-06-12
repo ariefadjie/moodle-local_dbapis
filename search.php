@@ -52,14 +52,41 @@ if ($data = $searchform->get_data()) {
 
     // We are getting the user input as is.
     // TODO: Ensure user input is safe to use.
-    $searchterm = required_param('searchterm', PARAM_RAW);
+    $searchterm = required_param('searchterm', PARAM_TEXT);
 
     // We are just displaying the form data here.
     // TODO: Query the database for the search term.
+    // $sql = "SELECT * from {local_dbapis} WHERE message LIKE '%$searchterm%'";
+    // $results = $DB->get_records_sql($sql);
+    $sql = "SELECT m.id, m.message, m.userid, u.firstname, u.lastname "
+    . " FROM {local_dbapis} m "
+    . "JOIN {user} u  on u.id = m.userid "
+    . "WHERE m.message LIKE :searchterm ";
+    $params = ['searchterm' => '%'.$searchterm.'%'];
+    $rs = $DB->get_recordset_sql($sql, $params);
+
     echo $OUTPUT->header();
 
     echo html_writer::start_tag('div', ['class' => 'border p-3 my-3']);
-    echo $searchterm;
+    // echo $searchterm;
+    foreach ($rs as $key => $record) {
+        // $user = $DB->get_record('user', ['id' => $record->userid]);
+        echo html_writer::start_tag('p', ['class' => '']);
+        if (has_capability('local/dbapis:deleteanymessage', $context)) {
+            echo $OUTPUT->single_button(
+                new moodle_url('/local/dbapis/deletepost.php', [
+                    'id' => $record->id,
+                    'return_url' => $PAGE->url,
+                    'sesskey' => sesskey(),
+                ]),
+                get_string('delete')
+            );
+        }
+        echo $record->id.', '.$record->message.', '.$record->firstname.' '.$record->lastname;
+        echo html_writer::end_tag('p');
+    }
+    $rs->close();
+
     echo html_writer::end_tag('div');
 
     echo html_writer::link($PAGE->url, get_string('continue'), ['class' => 'btn btn-link']);

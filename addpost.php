@@ -52,10 +52,20 @@ if ($data = $messageform->get_data()) {
 
     // We are getting the user input as is.
     // TODO: Ensure user input is safe to use.
-    $message = required_param('message', PARAM_RAW);
+    $message = required_param('message', PARAM_TEXT);
 
     // We are just displaying the form data here.
     // TODO: Save the data to the database.
+    if (!empty($message)) {
+        $record = new stdClass;
+        $record->message = $message;
+        $record->timecreated = time();
+        $record->userid = $USER->id;
+
+        $DB->insert_record('local_dbapis', $record);
+    }
+
+
     echo $OUTPUT->header();
 
     echo html_writer::start_tag('div', ['class' => 'border p-3 my-3']);
